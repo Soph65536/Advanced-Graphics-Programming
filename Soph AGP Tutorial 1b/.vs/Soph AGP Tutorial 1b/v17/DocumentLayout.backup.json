@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\sophe\\Documents\\Uni Work\\Year 3\\Advanced Graphics Programming\\Soph AGP Tutorial 1b\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2E432F75-17AE-4D92-A115-4A07E05EFCA6}|Soph AGP Tutorial 1b.vcxproj|C:\\Users\\sophe\\Documents\\Uni Work\\Year 3\\Advanced Graphics Programming\\Soph AGP Tutorial 1b\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2E432F75-17AE-4D92-A115-4A07E05EFCA6}|Soph AGP Tutorial 1b.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\sophe\\Documents\\Uni Work\\Year 3\\Advanced Graphics Programming\\Soph AGP Tutorial 1b\\main.cpp",
+              "RelativeDocumentMoniker": "main.cpp",
+              "ToolTip": "C:\\Users\\sophe\\Documents\\Uni Work\\Year 3\\Advanced Graphics Programming\\Soph AGP Tutorial 1b\\main.cpp",
+              "RelativeToolTip": "main.cpp",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAkwCAAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-25T12:25:28.634Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
