@@ -141,6 +141,16 @@ long Renderer::InitPipeline() {
 	return S_OK;
 }
 
+void Renderer::InitGraphics() {
+	Vertex vertices[] = {
+		{ XMFLOAT3{-0.5f, -0.5f, 0.0f}, XMFLOAT4{ 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3{0.0f, 0.5f, 0.0f}, XMFLOAT4{ 0.5f, 1.0f, 0.0f, 1.0f } },
+		{ XMFLOAT3{0.5f, -0.5f, 0.0f}, XMFLOAT4{ 0.0f, 0.0f, 1.0f, 1.0f } },
+	};
+
+
+}
+
 void Renderer::RenderFrame() {
 	//clear back buffer with desired colour
 	FLOAT bg[4] = { 0.5f, 1.0f, 0.0, 1.0f };

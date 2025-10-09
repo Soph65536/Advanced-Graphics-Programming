@@ -21,8 +21,10 @@ private:
 	ID3D11VertexShader* pVS = nullptr;
 	ID3D11PixelShader* pPS = nullptr;
 	ID3D11InputLayout* pIL = nullptr;
+	ID3D11Buffer* vBuffer = nullptr;
 
 	long InitPipeline();
+	void InitGraphics();
 
 	Window& window;
 public:
