@@ -25,6 +25,8 @@ Renderer::Renderer(Window& inWindow)
 		LOG("Failed to initialise pipeline");
 		return;
 	}
+
+	InitGraphics();
 }
 
 long Renderer::InitD3D(){
@@ -148,19 +150,44 @@ void Renderer::InitGraphics() {
 		{ XMFLOAT3{0.5f, -0.5f, 0.0f}, XMFLOAT4{ 0.0f, 0.0f, 1.0f, 1.0f } },
 	};
 
+	//create the vertex buffer
+	D3D11_BUFFER_DESC bd = { 0 };
+	bd.Usage = D3D11_USAGE_DYNAMIC; //dynamic allows cpu write and gpu read
+	bd.ByteWidth = sizeof(Vertex) * 3; //size of buffer - size of vertex * num of vertices
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER; //use as vertex buffer
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; //allow CPU to write in buffer
+	dev->CreateBuffer(&bd, NULL, &vBuffer); //create the buffer
 
+	if (vBuffer == 0) { return; }
+
+	//copy the vertices into the buffer
+	D3D11_MAPPED_SUBRESOURCE ms;
+	devCon->Map(vBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms); //map the buffer
+	memcpy(ms.pData, vertices, sizeof(vertices)); //copy the data into the buffer
+	devCon->Unmap(vBuffer, NULL);
 }
 
 void Renderer::RenderFrame() {
 	//clear back buffer with desired colour
-	FLOAT bg[4] = { 0.5f, 1.0f, 0.0, 1.0f };
+	FLOAT bg[4] = { 0.0f, 0.4f, 0.3f, 1.0f };
 	devCon->ClearRenderTargetView(backBuffer, bg);
+
+	//select which vertex buffer to use
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	devCon->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
+
+	//select which primitive we are using
+	devCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	devCon->Draw(3, 0);
 
 	//flip the back and front buffers around. display on screen
 	swapChain->Present(0, 0);
 }
 
 void Renderer::Clean() {
+	if (vBuffer) vBuffer->Release();
 	if (backBuffer) backBuffer->Release();
 	if (swapChain) swapChain->Release();
 	if (dev) dev->Release();
