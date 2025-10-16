@@ -7,3 +7,11 @@ DirectX::XMMATRIX Transform::GetWorldMatrix() {
 	DirectX::XMMATRIX translationMat = DirectX::XMMatrixTranslationFromVector(position);
 	return scaleMat * rotationMat * translationMat;
 }
+
+void Transform::Translate(DirectX::XMVECTOR translation) {
+	position = DirectX::XMVectorAdd(position, translation);
+}
+
+void Transform::Rotate(DirectX::XMVECTOR inRotation) {
+	rotation = DirectX::XMVectorAddAngles(rotation, inRotation);
+}
