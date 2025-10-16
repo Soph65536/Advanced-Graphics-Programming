@@ -1,13 +1,13 @@
 struct VIn
 {
     float4 position : POSITION;
-    float4 colour : COLOR;
+    float4 colour : COLOUR;
 };
 
 struct VOut
 {
     float4 position : SV_Position;
-    float4 colour : COLOR;
+    float4 colour : COLOUR;
 };
 
 VOut main( VIn input )
