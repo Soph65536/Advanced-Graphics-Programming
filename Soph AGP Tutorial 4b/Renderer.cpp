@@ -15,8 +15,7 @@ struct Vertex {
 
 struct CBuffer_PerObject
 {
-	XMFLOAT3 pos; //12 bytes (4 bytes * 3 floats)
-	float padding; //4 bytes, unused but important for file size in memory!
+	XMMATRIX world;
 };
 
 Renderer::Renderer(Window& inWindow)
@@ -178,13 +177,6 @@ void Renderer::InitGraphics() {
 		LOG("Failed to create constant buffer");
 		return;
 	}
-
-	CBuffer_PerObject cbufferData;
-	cbufferData.pos = XMFLOAT3(0.5f, 0.0f, 1.0f);
-	devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cbufferData, NULL, NULL);
-	devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
-
-	devCon->DrawIndexed(36, 0, 0);
 }
 
 void Renderer::RenderFrame() {
@@ -196,11 +188,16 @@ void Renderer::RenderFrame() {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	devCon->IASetVertexBuffers(0, 1, &vBuffer, &stride, &offset);
-	//sselect index buffer
+	//select index buffer
 	devCon->IASetIndexBuffer(iBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	//select which primitive we are using
 	devCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	CBuffer_PerObject cbufferData;
+	cbufferData.world = transform.GetWorldMatrix();
+	devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cbufferData, NULL, NULL);
+	devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
 
 	devCon->DrawIndexed(36, 0, 0);
 

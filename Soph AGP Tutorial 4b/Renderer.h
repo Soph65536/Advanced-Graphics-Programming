@@ -1,6 +1,8 @@
 #pragma once
 #include <d3d11.h>
 
+#include "Transform.h"
+
 struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -33,5 +35,7 @@ public:
 	Renderer(Window& inWindow);
 	void RenderFrame();
 	void Clean();
+
+	Transform transform;
 };
 

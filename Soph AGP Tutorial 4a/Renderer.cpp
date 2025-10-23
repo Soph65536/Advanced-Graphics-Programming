@@ -178,13 +178,6 @@ void Renderer::InitGraphics() {
 		LOG("Failed to create constant buffer");
 		return;
 	}
-
-	CBuffer_PerObject cbufferData;
-	cbufferData.pos = XMFLOAT3(0.5f, 0.0f, 1.0f);
-	devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cbufferData, NULL, NULL);
-	devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
-
-	devCon->DrawIndexed(36, 0, 0);
 }
 
 void Renderer::RenderFrame() {
@@ -201,6 +194,11 @@ void Renderer::RenderFrame() {
 
 	//select which primitive we are using
 	devCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	CBuffer_PerObject cbufferData;
+	cbufferData.pos = XMFLOAT3(0.5f, 0.0f, 1.0f);
+	devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cbufferData, NULL, NULL);
+	devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
 
 	devCon->DrawIndexed(36, 0, 0);
 

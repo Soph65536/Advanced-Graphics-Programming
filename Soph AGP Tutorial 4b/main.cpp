@@ -17,6 +17,9 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	std::cin >> letter;
 	std::cout << letter << std::endl;
 
+	//set camera z pos to 0.5
+	renderer.transform.Translate(0, 0, 0.5f);
+
 	//main game loop
 	while (true) {
 		renderer.RenderFrame();

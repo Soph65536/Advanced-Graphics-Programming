@@ -10,7 +10,10 @@ public:
 	DirectX::XMVECTOR scale{ 1, 1, 1 };
 
 	DirectX::XMMATRIX GetWorldMatrix();
+
 	void Translate(DirectX::XMVECTOR translation);
+	void Translate(float x, float y, float z);
+
 	void Rotate(DirectX::XMVECTOR inRotation);
 };
 

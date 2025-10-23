@@ -12,14 +12,13 @@ struct VOut
 
 cbuffer PerObjectCB
 {
-    float3 pos;
-    float padding;
+    matrix world;
 };
 
 VOut main( VIn input )
 {
     VOut output;
-    output.position = float4(input.position + pos, 1);
+    output.position = mul(world, float4(input.position, 1));
     output.colour = input.colour;
 	return output;
 }
