@@ -5,6 +5,9 @@
 #include "GameObject.h"
 #include "Debug.h"
 
+const float walkSpeed = 0.001f;
+const float runSpeed = 0.003f;
+
 //console debug stuff
 void OpenConsole() {
 	if (AllocConsole()) {
@@ -25,14 +28,16 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	Window window{ 800, 600, instanceH, nCmdShow };
 	Renderer renderer{ window };
 
+	//get models
 	Mesh mesh_cube{ renderer, "Assets/cube.obj" };
 	Mesh mesh_sphere{ renderer, "Assets/sphere.obj" };
 
+	//make gameobjects
 	GameObject obj1{ "Cube", &mesh_cube };
 	GameObject obj2{ "Sphere", &mesh_sphere };
 
-	//set camera  and renderer positions
-	renderer.camera.transform.SetPosition({ 0, 0, -1 });
+	//set camera and gameobject positions
+	renderer.camera.transform.SetPosition({ 0, 0, -5 });
 
 	renderer.RegisterGameObject(&obj1);
 	obj1.transform.SetPosition({ -3, 0, 0, 1 });
@@ -40,16 +45,14 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	renderer.RegisterGameObject(&obj2);
 	obj2.transform.SetPosition({ 3, 0, 0, 1 });
 
+	//movement
+	float moveSpeed = walkSpeed;
+
 	//declare keyboard tracker
 	DirectX::Keyboard::KeyboardStateTracker kbTracker;
 
 	//used to hold windows event messages
 	MSG msg;
-
-	printf("Hello World\n");
-	char letter[64];
-	std::cin >> letter;
-	std::cout << letter << std::endl;
 
 	//main game loop
 	while (true) {
@@ -61,6 +64,9 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 			if (msg.message == WM_QUIT) break; //break out of the loop if get quit message
 		}
 		else {
+			//calculate delta time, i will do properly later
+			float deltaTime = 0.001f;
+
 			//get keyboard input state
 			auto kbState = DirectX::Keyboard::Get().GetState();
 			kbTracker.Update(kbState);
@@ -69,24 +75,32 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 				PostQuitMessage(0);
 			}
 
+			if (kbTracker.pressed.LeftShift) {
+				moveSpeed = runSpeed;
+			}
+
+			if (kbTracker.released.LeftShift) {
+				moveSpeed = walkSpeed;
+			}
+
 			//keyboard camera movement
 			if (kbTracker.lastState.W) {
-				renderer.camera.transform.Translate({ 0, 0, 0.001f });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetForward(), moveSpeed));
 			}
 			if (kbTracker.lastState.S) {
-				renderer.camera.transform.Translate({ 0, 0, -0.001f });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetForward(), -moveSpeed));
 			}
 			if (kbTracker.lastState.A) {
-				renderer.camera.transform.Translate({ -0.001f, 0, 0 });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetRight(), -moveSpeed));
 			}
 			if (kbTracker.lastState.D) {
-				renderer.camera.transform.Translate({ 0.001f, 0, 0 });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetRight(), moveSpeed));
 			}
 			if (kbTracker.lastState.Q) {
-				renderer.camera.transform.Translate({ 0, 0.001f, 0 });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetUp(), moveSpeed));
 			}
 			if (kbTracker.lastState.E) {
-				renderer.camera.transform.Translate({ 0, -0.001f, 0 });
+				renderer.camera.transform.Translate(DirectX::XMVectorScale(renderer.camera.transform.GetUp(), -moveSpeed));
 			}
 
 			//get mouse input state
@@ -95,18 +109,11 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 			//mouse camera rotate
 			renderer.camera.transform.Rotate({ -(float)msState.y * 0.001f, (float)msState.x * 0.001f, 0 });
 			if (msState.leftButton) {
-				renderer.camera.transform.SetPosition({ 0, 0, -1 });
+				renderer.camera.transform.SetPosition({ 0, 0, -5 });
 			}
 
-			static float fakeTime = 0;
-			static float speed = 0.0001f;
-			fakeTime += speed;
-
-			obj1.transform.SetPosition({ 3, cos(fakeTime), 5 - sin(fakeTime) });
-			obj1.transform.Rotate({ speed, speed, 0 });
-
-			obj2.transform.SetPosition({ -cos(fakeTime) - 3, -sin(fakeTime), 5 });
-			obj2.transform.Rotate({ speed, speed, 0 });
+			obj1.transform.Rotate({ deltaTime, deltaTime, 0 });
+			obj2.transform.Rotate({ deltaTime, deltaTime, 0 });
 
 			renderer.RenderFrame();
 		}
