@@ -15,6 +15,9 @@ public:
 	DirectX::XMVECTOR GetRotation();
 	DirectX::XMVECTOR GetScale();
 
+	DirectX::XMVECTOR GetMin();
+	DirectX::XMVECTOR GetMax();
+
 	DirectX::XMVECTOR GetForward();
 	DirectX::XMVECTOR GetRight();
 	DirectX::XMVECTOR GetUp();

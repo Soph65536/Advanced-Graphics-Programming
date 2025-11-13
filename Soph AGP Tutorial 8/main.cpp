@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "GameObject.h"
+#include "BoxCollider.h"
 #include "Debug.h"
 
 const float walkSpeed = 0.001f;
@@ -30,9 +31,9 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	Renderer renderer{ window };
 
 	//get models and textures
-	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
+	Mesh mesh_cube{ renderer, "Assets/Models/fish.obj" };
 	Mesh mesh_sphere{ renderer, "Assets/Models/sphere.obj" };
-	Texture tex_box{ renderer, "Assets/Textures/Box.bmp" };
+	Texture tex_box{ renderer, "Assets/Textures/fish_texture.png" };
 	renderer.texture = &tex_box;
 
 	//make gameobjects
@@ -114,6 +115,9 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 			if (msState.leftButton) {
 				renderer.camera.transform.SetPosition({ 0, 0, -5 });
 			}
+
+			//camera collision
+			if (BoxCollider::BoxCollision(renderer.camera.transform, obj1.transform)) { renderer.RemoveGameObject(&obj1); }
 
 			obj1.transform.Rotate({ 0, -deltaTime, 0 });
 			obj2.transform.Rotate({ 0, -deltaTime, 0 });

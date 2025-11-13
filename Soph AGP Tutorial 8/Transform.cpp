@@ -20,6 +20,14 @@ DirectX::XMVECTOR Transform::GetScale() {
 	return scale;
 }
 
+DirectX::XMVECTOR Transform::GetMin() {
+	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, -0.5));
+}
+
+DirectX::XMVECTOR Transform::GetMax() {
+	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, 0.5));
+}
+
 DirectX::XMVECTOR Transform::GetForward() {
 	float pitch = DirectX::XMVectorGetX(rotation);
 	float yaw = DirectX::XMVectorGetY(rotation);
