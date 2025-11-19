@@ -26,5 +26,7 @@ public:
 	void Translate(DirectX::XMVECTOR translation);
 
 	void Rotate(DirectX::XMVECTOR inRotation);
+
+	void SetScale(DirectX::XMVECTOR newScale);
 };
 

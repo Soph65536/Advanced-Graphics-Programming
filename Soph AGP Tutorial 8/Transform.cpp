@@ -21,11 +21,11 @@ DirectX::XMVECTOR Transform::GetScale() {
 }
 
 DirectX::XMVECTOR Transform::GetMin() {
-	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, -0.5));
+	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, -0.5)); //subtract half of scale from position
 }
 
 DirectX::XMVECTOR Transform::GetMax() {
-	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, 0.5));
+	return DirectX::XMVectorAdd(position, DirectX::XMVectorScale(scale, 0.5)); //add half of sacle to position
 }
 
 DirectX::XMVECTOR Transform::GetForward() {
@@ -75,4 +75,9 @@ void Transform::Translate(DirectX::XMVECTOR translation) {
 
 void Transform::Rotate(DirectX::XMVECTOR inRotation) {
 	rotation = DirectX::XMVectorAddAngles(rotation, inRotation);
+}
+
+
+void Transform::SetScale(DirectX::XMVECTOR newScale) {
+	scale = newScale;
 }

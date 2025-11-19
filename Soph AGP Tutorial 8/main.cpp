@@ -31,8 +31,8 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	Renderer renderer{ window };
 
 	//get models and textures
-	Mesh mesh_cube{ renderer, "Assets/Models/fish.obj" };
-	Mesh mesh_sphere{ renderer, "Assets/Models/sphere.obj" };
+	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
+	Mesh mesh_sphere{ renderer, "Assets/Models/cube.obj" };
 	Texture tex_box{ renderer, "Assets/Textures/fish_texture.png" };
 	renderer.texture = &tex_box;
 
@@ -44,6 +44,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	renderer.camera.transform.SetPosition({ 0, 0, -5 });
 
 	renderer.RegisterGameObject(&obj1);
+	obj1.transform.SetScale({ 2, 2, 2 });
 	obj1.transform.SetPosition({ -3, 0, 0, 1 });
 
 	renderer.RegisterGameObject(&obj2);
@@ -118,6 +119,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 
 			//camera collision
 			if (BoxCollider::BoxCollision(renderer.camera.transform, obj1.transform)) { renderer.RemoveGameObject(&obj1); }
+			if (BoxCollider::BoxCollision(renderer.camera.transform, obj2.transform)) { renderer.RemoveGameObject(&obj2); }
 
 			obj1.transform.Rotate({ 0, -deltaTime, 0 });
 			obj2.transform.Rotate({ 0, -deltaTime, 0 });
