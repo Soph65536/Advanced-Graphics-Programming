@@ -95,7 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
-    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="FragmentShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -99,7 +99,7 @@ namespace ShaderLoading {
 		return S_OK;
 	}
 
-	long LoadPixelShader(std::string filename, ID3D11Device* dev, 
+	long LoadFragmentShader(std::string filename, ID3D11Device* dev, 
 		ID3D11PixelShader** outPS) {
 
 		auto shaderBytecode = DX::ReadData(std::wstring(filename.begin(), filename.end()).c_str());

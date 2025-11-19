@@ -161,11 +161,11 @@ long Renderer::InitDepthBuffer() {
 
 long Renderer::InitPipeline() {
 	ShaderLoading::LoadVertexShader("Compiled Shaders/VertexShader.cso", dev, &pVS, &pIL);
-	ShaderLoading::LoadPixelShader("Compiled Shaders/PixelShader.cso", dev, &pPS);
+	ShaderLoading::LoadFragmentShader("Compiled Shaders/FragmentShader.cso", dev, &pFS);
 
 	//set shader objects as active shaders in the pipeline
 	devCon->VSSetShader(pVS, 0, 0);
-	devCon->PSSetShader(pPS, 0, 0);
+	devCon->PSSetShader(pFS, 0, 0);
 
 	devCon->IASetInputLayout(pIL);
 
