@@ -35,6 +35,13 @@ private:
 	ID3D11BlendState* blendOpaque = nullptr;
 	ID3D11BlendState* blendTransparent = nullptr;
 
+	DirectX::XMVECTOR ambientLightColour{ 0.1f, 0.1f, 0.1f };
+	DirectX::XMVECTOR directionalLightColour{ 0, 0.8f, 0.75f };
+	DirectX::XMVECTOR directionalLightSourcePos{ 0.3f, 0.7f, 0.7f };
+	DirectX::XMVECTOR pointLightPosition{ 0, 1, -1 };
+	DirectX::XMVECTOR pointLightColour{ 0.85f, 0, 0.85f };
+	float pointLightStrength = 15;
+
 	DirectX::SpriteFont* font = nullptr;
 	DirectX::SpriteBatch* spriteBatch = nullptr;
 

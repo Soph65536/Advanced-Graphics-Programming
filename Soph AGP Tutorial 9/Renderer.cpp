@@ -16,6 +16,12 @@ using namespace DirectX;
 struct CBuffer_PerObject
 {
 	XMMATRIX WVP;
+	DirectX::XMVECTOR ambientLightColour;
+	DirectX::XMVECTOR directionalLightColour;
+	DirectX::XMVECTOR directionalLightDirection;
+	DirectX::XMVECTOR pointLightPosition;
+	DirectX::XMVECTOR pointLightColour;
+	float pointLightStrength;
 };
 
 Renderer::Renderer(Window& inWindow)
@@ -263,8 +269,22 @@ void Renderer::RenderFrame() {
 	devCon->PSSetShader(pFS, 0, 0);
 
 	for (auto obj : gameObjects) {
+		//transform
 		XMMATRIX world = obj->transform.GetWorldMatrix();
 		cBufferData.WVP = world * view * projection;
+
+		//lighting
+		//ambient light
+		cBufferData.ambientLightColour = ambientLightColour;
+		//directional light
+		cBufferData.directionalLightColour = directionalLightColour;
+		XMMATRIX transpose = XMMatrixTranspose(world);
+		cBufferData.directionalLightDirection = XMVector3Transform(directionalLightSourcePos, transpose);
+		//point light
+		cBufferData.pointLightPosition = pointLightPosition;
+		cBufferData.pointLightColour = pointLightColour;
+		cBufferData.pointLightStrength = pointLightStrength;
+
 		devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cBufferData, NULL, NULL);
 		devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
 	

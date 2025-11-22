@@ -33,6 +33,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	//get models and textures
 	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
 	Mesh mesh_grass{ renderer, "Assets/Models/grass.obj", true };
+	Texture tex_box{ renderer, "Assets/Textures/Box.bmp"};
 	Texture tex_fish{ renderer, "Assets/Textures/fish_texture.png", true };
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
 
@@ -121,6 +122,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 			if (BoxCollider::BoxCollision(renderer.camera.transform, objFlower.transform)) { renderer.RemoveGameObject(&objFlower); }
 
 			objCube.transform.Rotate({ deltaTime, -deltaTime, 0 });
+			objFlower.transform.Rotate({ 0, -deltaTime, 0 });
 
 			renderer.RenderFrame();
 		}
