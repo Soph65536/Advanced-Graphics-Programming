@@ -6,6 +6,8 @@
 #include "Transform.h"
 #include "Camera.h"
 
+#define MAX_POINT_LIGHTS 8
+
 struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -14,6 +16,15 @@ struct ID3D11DepthStencilView;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct ID3D11BlendState;
+
+struct PointLight {
+	DirectX::XMVECTOR position{ 0, 0, 0 };
+	DirectX::XMVECTOR colour{ 1, 1, 1 };
+
+	float strength = 10;
+	bool enabled = false; //disabled by default so we dont accidentally use any uninitialised lights
+	float padding[2]; //exists to bulk the struct size to a multiple of 16 bytes
+};
 
 class Window;
 class GameObject;
@@ -38,9 +49,6 @@ private:
 	DirectX::XMVECTOR ambientLightColour{ 0.1f, 0.1f, 0.1f };
 	DirectX::XMVECTOR directionalLightColour{ 0, 0.8f, 0.75f };
 	DirectX::XMVECTOR directionalLightSourcePos{ 0.3f, 0.7f, 0.7f };
-	DirectX::XMVECTOR pointLightPosition{ 0, 1, -1 };
-	DirectX::XMVECTOR pointLightColour{ 0.85f, 0, 0.85f };
-	float pointLightStrength = 15;
 
 	DirectX::SpriteFont* font = nullptr;
 	DirectX::SpriteBatch* spriteBatch = nullptr;
@@ -75,6 +83,8 @@ public:
 	std::vector<GameObject*> gameObjects;
 	void RegisterGameObject(GameObject* e);
 	void RemoveGameObject(GameObject* e);
+
+	PointLight pointLights[MAX_POINT_LIGHTS];
 
 	Camera camera;
 };

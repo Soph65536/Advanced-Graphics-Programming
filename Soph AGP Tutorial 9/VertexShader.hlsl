@@ -1,3 +1,15 @@
+#define MAX_POINT_LIGHTS 8
+
+struct PointLight
+{
+    float4 position;
+    float4 colour;
+
+    float strength;
+    bool enabled;
+    float padding;
+};
+    
 struct VIn
 {
     float3 position : POSITION;
@@ -18,9 +30,7 @@ cbuffer PerObjectCB
     float4 ambientLightColour;
     float4 directionalLightColour;
     float4 directionalLightDirection;
-    float4 pointLightPosition;
-    float4 pointLightColour;
-    float pointLightStrength;
+    PointLight pointLights[MAX_POINT_LIGHTS];
 };
 
 VOut main( VIn input )
@@ -34,11 +44,18 @@ VOut main( VIn input )
     float diffuseAmount = saturate(dot(directionalLightDirection.xyz, input.norm)); //saturate clamps all values to between 0 and 1
     float3 directionalFinal = directionalLightColour * diffuseAmount;
     //point light
-    float3 pointLightDirection = normalize(pointLightPosition - input.position);
-    float pointLightDistance = length(pointLightPosition - input.position);
-    float pointLightAttenuation = pointLightStrength / (pointLightDistance * pointLightDistance + pointLightStrength); //attenuation = strength / (distance^2 + strength)
-    float pointAmount = saturate(dot(pointLightDirection.xyz, input.norm) * pointLightAttenuation);
-    float3 pointFinal = pointLightColour * pointAmount;
+    float3 pointFinal = float3(0, 0, 0);
+    for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
+    {
+        if (!pointLights[i].enabled)
+            continue;
+        
+        float3 pointLightDirection = normalize(pointLights[i].position - input.position);
+        float pointLightDistance = length(pointLights[i].position - input.position);
+        float pointLightAttenuation = pointLights[i].strength / (pointLightDistance * pointLightDistance + pointLights[i].strength); //attenuation = strength / (distance^2 + strength)
+        float pointAmount = saturate(dot(pointLightDirection.xyz, input.norm) * pointLightAttenuation);
+        pointFinal += pointLights[i].colour * pointAmount;
+    }
     
     output.colour = saturate(ambientLightColour + float4(directionalFinal, 1) + float4(pointFinal, 1));
 	return output;

@@ -19,9 +19,7 @@ struct CBuffer_PerObject
 	DirectX::XMVECTOR ambientLightColour;
 	DirectX::XMVECTOR directionalLightColour;
 	DirectX::XMVECTOR directionalLightDirection;
-	DirectX::XMVECTOR pointLightPosition;
-	DirectX::XMVECTOR pointLightColour;
-	float pointLightStrength;
+	PointLight pointLights[MAX_POINT_LIGHTS];
 };
 
 Renderer::Renderer(Window& inWindow)
@@ -281,9 +279,18 @@ void Renderer::RenderFrame() {
 		XMMATRIX transpose = XMMatrixTranspose(world);
 		cBufferData.directionalLightDirection = XMVector3Transform(directionalLightSourcePos, transpose);
 		//point light
-		cBufferData.pointLightPosition = pointLightPosition;
-		cBufferData.pointLightColour = pointLightColour;
-		cBufferData.pointLightStrength = pointLightStrength;
+		for (size_t i = 0; i < MAX_POINT_LIGHTS; i++) {
+			cBufferData.pointLights[i].enabled = pointLights[i].enabled;
+
+			//if disabled then skip to next ligh
+			if (!pointLights[i].enabled) { continue; }
+
+			XMMATRIX inverse = XMMatrixInverse(nullptr, world);
+
+			cBufferData.pointLights[i].position = XMVector3Transform(pointLights[i].position, inverse);
+			cBufferData.pointLights[i].colour = pointLights[i].colour;
+			cBufferData.pointLights[i].strength = pointLights[i].strength;
+		}
 
 		devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cBufferData, NULL, NULL);
 		devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);

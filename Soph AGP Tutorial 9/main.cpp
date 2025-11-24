@@ -41,6 +41,10 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	GameObject objCube{ "Cube", &mesh_cube, &tex_fish };
 	GameObject objFlower{ "Flower", &mesh_grass, &tex_flower };
 
+	//set lighting
+	renderer.pointLights[0] = { DirectX::XMVECTOR{-4, 1, -1}, {0.85f, 0, 0.85f}, 10, true };
+	renderer.pointLights[0] = { DirectX::XMVECTOR{2, -1, -1}, {0, 0.85f, 0.85f}, 20, true };
+
 	//set camera and gameobject positions
 	renderer.camera.transform.SetPosition({ 0, 0, -5 });
 
