@@ -1,4 +1,15 @@
-float4 main( float4 pos : POSITION ) : SV_POSITION
+#include "Common.hlsli"
+
+struct VOut
 {
-	return pos;
+    float4 position : SV_Position;
+    float2 uvw : TEXCOORD;
+};
+
+VOut main( VIn input )
+{
+    VOut output;
+    output.position = mul(WVP, float4(input.position, 1));
+    output.uvw = input.position.xyz;
+    return output;
 }

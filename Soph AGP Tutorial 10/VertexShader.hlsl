@@ -1,6 +1,13 @@
 #include "Common.hlsli"
 #include "Lighting.hlsli"
 
+struct VOut
+{
+    float4 position : SV_Position;
+    float2 uv : TEXCOORD;
+    float4 colour : COLOUR;
+};
+
 cbuffer PerObjectCB : register(b12) //this buffer is binded to register 12
 {
     matrix world;

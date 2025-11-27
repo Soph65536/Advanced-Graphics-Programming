@@ -1,4 +1,14 @@
-float4 main() : SV_TARGET
+TextureCube cube0;
+sampler sampler0;
+
+struct FIn
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float4 position : SV_Position;
+    float3 uvw : TEXCOORD;
+};
+
+float4 main(FIn input) : SV_TARGET
+{
+    float4 sampled = cube0.Sample(sampler0, input.uvw);
+    return sampled;
 }
