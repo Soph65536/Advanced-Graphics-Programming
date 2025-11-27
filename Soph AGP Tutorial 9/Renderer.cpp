@@ -13,12 +13,13 @@
 #include"DirectXMath.h"
 using namespace DirectX;
 
-struct CBuffer_PerObject
-{
+struct CBuffer_PerObject {
 	XMMATRIX WVP;
-	DirectX::XMVECTOR ambientLightColour;
-	DirectX::XMVECTOR directionalLightColour;
-	DirectX::XMVECTOR directionalLightDirection;
+};
+
+struct CBuffer_Lighting {
+	DirectX::XMVECTOR ambientLightColour = { 1, 1, 1 };
+	DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 	PointLight pointLights[MAX_POINT_LIGHTS];
 };
 
@@ -182,13 +183,20 @@ long Renderer::InitPipeline() {
 }
 
 void Renderer::InitGraphics() {
-	//create the constant buffer
+	//create the per object constant buffer
 	D3D11_BUFFER_DESC cbd = { 0 };
 	cbd.Usage = D3D11_USAGE_DEFAULT;
 	cbd.ByteWidth = sizeof(CBuffer_PerObject);
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_PerObject))) {
-		LOG("Failed to create constant buffer");
+		LOG("Failed to create constant buffer per object");
+		return;
+	}
+
+	//create the lighting constant buffer (same settings as above so we just need to change the size)
+	cbd.ByteWidth = sizeof(CBuffer_Lighting);
+	if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_Lighting))) {
+		LOG("Failed to create constant buffer lighting");
 		return;
 	}
 
@@ -256,8 +264,9 @@ void Renderer::RenderFrame() {
 	devCon->ClearDepthStencilView(depthBuffer, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//create the transform data stuff
-	CBuffer_PerObject cBufferData;
-	cBufferData.WVP = DirectX::XMMatrixIdentity();
+	CBuffer_Lighting cBufferLightingData;
+	CBuffer_PerObject cBufferPerObjectData;
+	cBufferPerObjectData.WVP = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX view = camera.GetViewMatrix();
 	DirectX::XMMATRIX projection = camera.GetProjectionMatrix(window.GetWidth(), window.GetHeight());
 
@@ -269,31 +278,41 @@ void Renderer::RenderFrame() {
 	for (auto obj : gameObjects) {
 		//transform
 		XMMATRIX world = obj->transform.GetWorldMatrix();
-		cBufferData.WVP = world * view * projection;
+		cBufferPerObjectData.WVP = world * view * projection;
 
 		//lighting
 		//ambient light
-		cBufferData.ambientLightColour = ambientLightColour;
-		//directional light
-		cBufferData.directionalLightColour = directionalLightColour;
-		XMMATRIX transpose = XMMatrixTranspose(world);
-		cBufferData.directionalLightDirection = XMVector3Transform(directionalLightSourcePos, transpose);
-		//point light
-		for (size_t i = 0; i < MAX_POINT_LIGHTS; i++) {
-			cBufferData.pointLights[i].enabled = pointLights[i].enabled;
+		cBufferLightingData.ambientLightColour = ambientLightColour;
+		//directional lights
+		for (size_t i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++) {
+			cBufferLightingData.directionalLights[i].enabled = directionalLights[i].enabled;
 
-			//if disabled then skip to next ligh
+			//if disabled then skip to next light
+			if (!directionalLights[i].enabled) { continue; }
+
+			cBufferLightingData.directionalLights[i].colour = directionalLights[i].colour;
+			XMMATRIX transpose = XMMatrixTranspose(world);
+			cBufferLightingData.directionalLights[i].sourcePosition = XMVector3Transform(directionalLights[i].sourcePosition, transpose);
+		}
+		//point lights
+		for (size_t i = 0; i < MAX_POINT_LIGHTS; i++) {
+			cBufferLightingData.pointLights[i].enabled = pointLights[i].enabled;
+
+			//if disabled then skip to next light
 			if (!pointLights[i].enabled) { continue; }
 
 			XMMATRIX inverse = XMMatrixInverse(nullptr, world);
 
-			cBufferData.pointLights[i].position = XMVector3Transform(pointLights[i].position, inverse);
-			cBufferData.pointLights[i].colour = pointLights[i].colour;
-			cBufferData.pointLights[i].strength = pointLights[i].strength;
+			cBufferLightingData.pointLights[i].position = XMVector3Transform(pointLights[i].position, inverse);
+			cBufferLightingData.pointLights[i].colour = pointLights[i].colour;
+			cBufferLightingData.pointLights[i].strength = pointLights[i].strength;
 		}
 
-		devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cBufferData, NULL, NULL);
-		devCon->VSSetConstantBuffers(0, 1, &cBuffer_PerObject);
+		devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cBufferPerObjectData, NULL, NULL);
+		devCon->VSSetConstantBuffers(12, 1, &cBuffer_PerObject);
+
+		devCon->UpdateSubresource(cBuffer_Lighting, NULL, NULL, &cBufferLightingData, NULL, NULL);
+		devCon->VSSetConstantBuffers(13, 1, &cBuffer_Lighting);
 	
 		auto t = obj->texture->GetTexture();
 		devCon->PSSetShaderResources(0, 1, &t);

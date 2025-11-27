@@ -33,7 +33,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	//get models and textures
 	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
 	Mesh mesh_grass{ renderer, "Assets/Models/grass.obj", true };
-	Texture tex_box{ renderer, "Assets/Textures/Box.bmp"};
+	Texture tex_box{ renderer, "Assets/Textures/Box.bmp" };
 	Texture tex_fish{ renderer, "Assets/Textures/fish_texture.png", true };
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
 
@@ -42,8 +42,10 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	GameObject objFlower{ "Flower", &mesh_grass, &tex_flower };
 
 	//set lighting
+	renderer.directionalLights[0] = { DirectX::XMVECTOR{ 0.3f, 0.7f, 0.7f }, { 0, 0.8f, 0.75f }, true };
+	renderer.directionalLights[1] = { DirectX::XMVECTOR{ 0.0f, 0.2f, 0.5f }, { 0.8f, 0.75f, 0 }, true };
 	renderer.pointLights[0] = { DirectX::XMVECTOR{-4, 1, -1}, {0.85f, 0, 0.85f}, 10, true };
-	renderer.pointLights[0] = { DirectX::XMVECTOR{2, -1, -1}, {0, 0.85f, 0.85f}, 20, true };
+	renderer.pointLights[1] = { DirectX::XMVECTOR{2, -1, -1}, {0, 0.85f, 0.85f}, 20, true };
 
 	//set camera and gameobject positions
 	renderer.camera.transform.SetPosition({ 0, 0, -5 });

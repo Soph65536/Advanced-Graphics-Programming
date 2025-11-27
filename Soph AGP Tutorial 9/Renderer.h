@@ -7,6 +7,7 @@
 #include "Camera.h"
 
 #define MAX_POINT_LIGHTS 8
+#define MAX_DIRECTIONAL_LIGHTS 4
 
 struct IDXGISwapChain;
 struct ID3D11Device;
@@ -16,6 +17,14 @@ struct ID3D11DepthStencilView;
 struct ID3D11DepthStencilState;
 struct ID3D11RasterizerState;
 struct ID3D11BlendState;
+
+struct DirectionalLight {
+	DirectX::XMVECTOR sourcePosition{ 0, 0, 0 };
+	DirectX::XMVECTOR colour{ 1, 1, 1 };
+
+	bool enabled = false;
+	float padding[3];
+};
 
 struct PointLight {
 	DirectX::XMVECTOR position{ 0, 0, 0 };
@@ -46,10 +55,6 @@ private:
 	ID3D11BlendState* blendOpaque = nullptr;
 	ID3D11BlendState* blendTransparent = nullptr;
 
-	DirectX::XMVECTOR ambientLightColour{ 0.1f, 0.1f, 0.1f };
-	DirectX::XMVECTOR directionalLightColour{ 0, 0.8f, 0.75f };
-	DirectX::XMVECTOR directionalLightSourcePos{ 0.3f, 0.7f, 0.7f };
-
 	DirectX::SpriteFont* font = nullptr;
 	DirectX::SpriteBatch* spriteBatch = nullptr;
 
@@ -60,7 +65,8 @@ private:
 	ID3D11InputLayout* pIL = nullptr;
 	ID3D11Buffer* vBuffer = nullptr; //vertex buffer
 	ID3D11Buffer* iBuffer = nullptr; //index buffer
-	ID3D11Buffer* cBuffer_PerObject = nullptr; //constant buffer
+	ID3D11Buffer* cBuffer_PerObject = nullptr; //constant buffer object
+	ID3D11Buffer* cBuffer_Lighting = nullptr; //constant buffer lighting
 
 	long InitDepthBuffer();
 	long InitPipeline();
@@ -84,6 +90,8 @@ public:
 	void RegisterGameObject(GameObject* e);
 	void RemoveGameObject(GameObject* e);
 
+	DirectX::XMVECTOR ambientLightColour{ 0.1f, 0.1f, 0.1f };
+	DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
 	PointLight pointLights[MAX_POINT_LIGHTS];
 
 	Camera camera;
