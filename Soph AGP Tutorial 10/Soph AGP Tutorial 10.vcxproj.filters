@@ -96,6 +96,8 @@
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
     <FxCompile Include="FragmentShader.hlsl" />
+    <FxCompile Include="SkyboxVSShader.hlsl" />
+    <FxCompile Include="SkyboxFShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
