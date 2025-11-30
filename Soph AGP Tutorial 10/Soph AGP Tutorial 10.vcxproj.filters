@@ -96,7 +96,7 @@
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl" />
     <FxCompile Include="FragmentShader.hlsl" />
-    <FxCompile Include="SkyboxVSShader.hlsl" />
+    <FxCompile Include="SkyboxVShader.hlsl" />
     <FxCompile Include="SkyboxFShader.hlsl" />
   </ItemGroup>
   <ItemGroup>

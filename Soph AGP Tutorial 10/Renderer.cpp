@@ -173,8 +173,8 @@ long Renderer::InitPipeline() {
 	ShaderLoading::LoadVertexShader("Compiled Shaders/VertexShader.cso", dev, &pVS, &pIL);
 	ShaderLoading::LoadFragmentShader("Compiled Shaders/FragmentShader.cso", dev, &pFS);
 
-	ShaderLoading::LoadVertexShader("Compiled Shaders/SkyboxVShader.cso", dev, &pVS, &pIL);
-	ShaderLoading::LoadFragmentShader("Compiled Shaders/SkyboxFShader.cso", dev, &pFS);
+	ShaderLoading::LoadVertexShader("Compiled Shaders/SkyboxVShader.cso", dev, &pVSSkybox, &pILSkybox);
+	ShaderLoading::LoadFragmentShader("Compiled Shaders/SkyboxFShader.cso", dev, &pFSSkybox);
 
 	//set shader objects as active shaders in the pipeline
 	devCon->VSSetShader(pVS, 0, 0);
@@ -271,9 +271,9 @@ void Renderer::DrawSkybox() {
 	devCon->RSSetState(rasterizerCullFront);
 
 	//set skybox shaders
-	devCon->IASetInputLayout(pILSkybox);
 	devCon->VSSetShader(pVSSkybox, 0, 0);
 	devCon->PSSetShader(pFSSkybox, 0, 0);
+	devCon->IASetInputLayout(pILSkybox);
 
 	//constant buffer data (manually rolling this for skybox. usually handled in renderframe)
 	CBuffer_PerObject cbuf;

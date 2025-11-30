@@ -33,7 +33,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	//get models and textures
 	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
 	Mesh mesh_grass{ renderer, "Assets/Models/grass.obj", true };
-	Texture tex_skybox(renderer, "Assets/Textures/Skybox/skybox01.dds");
+	Texture tex_skybox{ renderer, "Assets/Textures/Skybox/skybox01.dds", false, Texture::TextureType::Cubemap };
 	Texture tex_box{ renderer, "Assets/Textures/Box.bmp" };
 	Texture tex_fish{ renderer, "Assets/Textures/fish_texture.png", true };
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
