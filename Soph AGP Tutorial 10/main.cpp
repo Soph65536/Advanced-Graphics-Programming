@@ -43,7 +43,7 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	renderer.skyboxObject = &obj_skybox;
 
 	//make gameobjects (render transparent objects last!!)
-	GameObject objCube{ "Cube", &mesh_cube, &tex_fish, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/FragmentShader.cso" };
+	GameObject objCube{ "Cube", &mesh_cube, &tex_box, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/FragmentShader.cso" };
 	GameObject objFlower{ "Flower", &mesh_grass, &tex_flower };
 
 	//set lighting

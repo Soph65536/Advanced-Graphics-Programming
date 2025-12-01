@@ -250,9 +250,9 @@ void Renderer::InitBlendModes() {
 }
 
 void Renderer::RenderText(const char* text, int x, int y) {
-	//get current depth stencil
-	ID3D11DepthStencilState* depthState;
-	devCon->OMGetDepthStencilState(&depthState, 0);
+	////get current depth stencil
+	//ID3D11DepthStencilState* depthState;
+	//devCon->OMGetDepthStencilState(&depthState, 0);
 
 	//draw text
 	spriteBatch->Begin();
@@ -260,7 +260,7 @@ void Renderer::RenderText(const char* text, int x, int y) {
 	spriteBatch->End();
 
 	//restore previous depth stencil
-	devCon->OMSetDepthStencilState(depthState, 0);
+	devCon->OMSetDepthStencilState(nullptr, 0);
 }
 
 void Renderer::DrawSkybox() {
