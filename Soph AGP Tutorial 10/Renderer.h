@@ -70,6 +70,7 @@ private:
 	ID3D11Buffer* vBuffer = nullptr; //vertex buffer
 	ID3D11Buffer* iBuffer = nullptr; //index buffer
 	ID3D11Buffer* cBuffer_PerObject = nullptr; //constant buffer object
+	ID3D11Buffer* cBuffer_PerFrame = nullptr; //constant buffer frame
 	ID3D11Buffer* cBuffer_Lighting = nullptr; //constant buffer lighting
 
 	long InitDepthBuffer();

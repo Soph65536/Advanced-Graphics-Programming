@@ -1,13 +1,6 @@
 #include "Common.hlsli"
 #include "Lighting.hlsli"
 
-struct VOut
-{
-    float4 position : SV_Position;
-    float2 uv : TEXCOORD;
-    float4 colour : COLOUR;
-};
-
 VOut main( VIn input )
 {
     VOut output;

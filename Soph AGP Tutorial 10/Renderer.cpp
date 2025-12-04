@@ -14,7 +14,13 @@
 using namespace DirectX;
 
 struct CBuffer_PerObject {
+	XMMATRIX world;
 	XMMATRIX WVP;
+};
+
+struct CBuffer_PerFrame {
+	XMFLOAT3 cameraPosition;
+	float padding;
 };
 
 struct CBuffer_Lighting {
@@ -170,11 +176,15 @@ long Renderer::InitDepthBuffer() {
 }
 
 long Renderer::InitPipeline() {
+	//basic shader
 	ShaderLoading::LoadVertexShader("Compiled Shaders/VertexShader.cso", dev, &pVS, &pIL);
 	ShaderLoading::LoadFragmentShader("Compiled Shaders/FragmentShader.cso", dev, &pFS);
-
+	//skybox shader
 	ShaderLoading::LoadVertexShader("Compiled Shaders/SkyboxVShader.cso", dev, &pVSSkybox, &pILSkybox);
 	ShaderLoading::LoadFragmentShader("Compiled Shaders/SkyboxFShader.cso", dev, &pFSSkybox);
+	//reflective shader
+	ShaderLoading::LoadVertexShader("Compiled Shaders/ReflectiveVShader.cso", dev, &pVS, &pIL);
+	ShaderLoading::LoadFragmentShader("Compiled Shaders/ReflectiveFShader.cso", dev, &pFS);
 
 	//set shader objects as active shaders in the pipeline
 	devCon->VSSetShader(pVS, 0, 0);
@@ -193,6 +203,13 @@ void Renderer::InitGraphics() {
 	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_PerObject))) {
 		LOG("Failed to create constant buffer per object");
+		return;
+	}
+
+	//create the per frame constant buffer
+	cbd.ByteWidth = sizeof(CBuffer_PerFrame);
+	if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_PerFrame))) {
+		LOG("Failed to create constant buffer per frame");
 		return;
 	}
 
@@ -319,14 +336,21 @@ void Renderer::RenderFrame() {
 
 	//create the transform data stuff
 	CBuffer_Lighting cBufferLightingData;
-	CBuffer_PerObject cBufferPerObjectData;
+	CBuffer_PerObject cBufferPerObjectData = {};
 	cBufferPerObjectData.WVP = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX view = camera.GetViewMatrix();
 	DirectX::XMMATRIX projection = camera.GetProjectionMatrix(window.GetWidth(), window.GetHeight());
 
+	//set per frame buffer values
+	CBuffer_PerFrame cBufferPerFrameData = {};
+	XMStoreFloat3(&cBufferPerFrameData.cameraPosition, camera.transform.GetPosition());
+	devCon->UpdateSubresource(cBuffer_PerFrame, NULL, NULL, &cBufferPerFrameData, NULL, NULL);
+	devCon->VSSetConstantBuffers(11, 1, &cBuffer_PerFrame);
+
 	for (auto obj : gameObjects) {
 		//transform
 		XMMATRIX world = obj->transform.GetWorldMatrix();
+		cBufferPerObjectData.world = world;
 		cBufferPerObjectData.WVP = world * view * projection;
 
 		//lighting
@@ -367,6 +391,8 @@ void Renderer::RenderFrame() {
 		devCon->PSSetShaderResources(0, 1, &t);
 		auto s = obj->texture->GetSampler();
 		devCon->PSSetSamplers(0, 1, &s);
+		auto ts = skyboxObject->texture->GetTexture();
+		devCon->PSSetShaderResources(1, 1, &ts);
 
 		devCon->RSSetState(obj->mesh->isDoubleSided ? rasterizerCullNone : rasterizerCullBack);
 		devCon->OMSetBlendState(obj->texture->isTransparent ? blendTransparent : blendOpaque, 0, 0xffffffff);

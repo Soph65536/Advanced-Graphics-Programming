@@ -32,8 +32,10 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 
 	//get models and textures
 	Mesh mesh_cube{ renderer, "Assets/Models/cube.obj" };
+	Mesh mesh_sphere{ renderer, "Assets/Models/sphere.obj" };
+	Mesh mesh_fish{ renderer, "Assets/Models/fish.obj" };
 	Mesh mesh_grass{ renderer, "Assets/Models/grass.obj", true };
-	Texture tex_skybox{ renderer, "Assets/Textures/Skybox/skybox01.dds", false, Texture::TextureType::Cubemap };
+	Texture tex_skybox{ renderer, "Assets/Textures/Skybox/skybox02.dds", false, Texture::TextureType::Cubemap };
 	Texture tex_box{ renderer, "Assets/Textures/Box.bmp" };
 	Texture tex_fish{ renderer, "Assets/Textures/fish_texture.png", true };
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
@@ -43,7 +45,8 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	renderer.skyboxObject = &obj_skybox;
 
 	//make gameobjects (render transparent objects last!!)
-	GameObject objCube{ "Cube", &mesh_cube, &tex_box, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/FragmentShader.cso" };
+	GameObject objSphere{ "Sphere", &mesh_sphere, &tex_box };
+	GameObject objFish{ "Fish", &mesh_fish, &tex_fish };
 	GameObject objFlower{ "Flower", &mesh_grass, &tex_flower };
 
 	//set lighting
@@ -55,8 +58,11 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	//set camera and gameobject positions
 	renderer.camera.transform.SetPosition({ 0, 0, -5 });
 
-	renderer.RegisterGameObject(&objCube);
-	objCube.transform.SetPosition({ -3, 0, 0, 1 });
+	renderer.RegisterGameObject(&objSphere);
+	objSphere.transform.SetPosition({ 0, 0, 3, 1 });
+
+	renderer.RegisterGameObject(&objFish);
+	objFish.transform.SetPosition({ -3, 0, 0, 1 });
 
 	renderer.RegisterGameObject(&objFlower);
 	objFlower.transform.SetPosition({ 3, 0, 0, 1 });
@@ -129,10 +135,11 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 			}
 
 			//camera collision
-			if (BoxCollider::BoxCollision(renderer.camera.transform, objCube.transform)) { renderer.RemoveGameObject(&objCube); }
+			if (BoxCollider::BoxCollision(renderer.camera.transform, objFish.transform)) { renderer.RemoveGameObject(&objFish); }
 			if (BoxCollider::BoxCollision(renderer.camera.transform, objFlower.transform)) { renderer.RemoveGameObject(&objFlower); }
 
-			objCube.transform.Rotate({ deltaTime, -deltaTime, 0 });
+			objSphere.transform.Rotate({ -deltaTime * 0.5f, 0, 0 });
+			objFish.transform.Rotate({ deltaTime, -deltaTime, 0 });
 			objFlower.transform.Rotate({ 0, -deltaTime, 0 });
 
 			renderer.RenderFrame();

@@ -98,6 +98,8 @@
     <FxCompile Include="FragmentShader.hlsl" />
     <FxCompile Include="SkyboxVShader.hlsl" />
     <FxCompile Include="SkyboxFShader.hlsl" />
+    <FxCompile Include="ReflectiveVShader.hlsl" />
+    <FxCompile Include="ReflectiveFShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

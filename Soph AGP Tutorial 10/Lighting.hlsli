@@ -28,6 +28,19 @@ cbuffer lightingData : register(b13) //this buffer is binded to register 13
 };
 
 
+float3 CalculateReflectionUVW(matrix world, float4 vertexPosition, float3 vertexNormal, float3 cameraPosition)
+{
+    //vertex position in worldspace
+    float3 wPosition = mul(world, vertexPosition);
+    //surface normal in worldspace
+    float3 wNormal = normalize(mul(world, float4(vertexNormal, 0)));
+    //obtain eye vector
+    float3 eyeDirection = normalize(cameraPosition - wPosition);
+    //compute reflection vector, below is equivalent to (2 * dot(eyeDirection, wNormal) * wNormal - eyeDir);
+    return reflect(-eyeDirection, wNormal);
+}
+
+
 float3 CalculateDirectionalLights(DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS], float3 vNormal) //vnormal is normal from the vertex shader input
 {
     float3 directionalFinal = float3(0, 0, 0);

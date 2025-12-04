@@ -1,14 +1,14 @@
 #include "Common.hlsli"
 
-struct VOut
+struct VOutS
 {
     float4 position : SV_Position;
     float3 uvw : TEXCOORD;
 };
 
-VOut main( VIn input )
+VOutS main( VIn input )
 {
-    VOut output;
+    VOutS output;
     output.position = mul(wvp, float4(input.position, 1));
     output.uvw = input.position.xyz;
     return output;

@@ -27,7 +27,5 @@ public:
 
 	std::string GetName() { return name; }
 	GameObject(std::string objectName, Mesh* objectMesh, Texture* objectTexture);
-	GameObject(std::string objectName, Mesh* objectMesh, Texture* objectTexture, 
-		std::string vertexShaderFilePath, std::string fragmentShaderFilePath);
 };
 
