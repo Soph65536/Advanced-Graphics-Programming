@@ -208,7 +208,7 @@ void Renderer::InitGraphics() {
 }
 
 void Renderer::InitDepthStencilState() {
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	D3D11_DEPTH_STENCIL_DESC dsDesc = { 0 };
 	//depth test parameters
 	dsDesc.DepthEnable = true;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -261,6 +261,11 @@ void Renderer::RenderText(const char* text, int x, int y) {
 
 	//restore previous depth stencil
 	devCon->OMSetDepthStencilState(nullptr, 0);
+
+	//restore shader settings after text display
+	devCon->VSSetShader(pVS, 0, 0);
+	devCon->PSSetShader(pFS, 0, 0);
+	devCon->IASetInputLayout(pIL);
 }
 
 void Renderer::DrawSkybox() {
@@ -318,11 +323,6 @@ void Renderer::RenderFrame() {
 	cBufferPerObjectData.WVP = DirectX::XMMatrixIdentity();
 	DirectX::XMMATRIX view = camera.GetViewMatrix();
 	DirectX::XMMATRIX projection = camera.GetProjectionMatrix(window.GetWidth(), window.GetHeight());
-
-	//restore shader settings after text display
-	devCon->VSSetShader(pVS, 0, 0);
-	devCon->PSSetShader(pFS, 0, 0);
-	devCon->IASetInputLayout(pIL);
 
 	for (auto obj : gameObjects) {
 		//transform
