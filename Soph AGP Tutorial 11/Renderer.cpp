@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Material.h"
 #include "GameObject.h"
 #include "ShaderLoading.h"
 #include "ModelLoader.h"
@@ -292,11 +293,6 @@ void Renderer::DrawSkybox() {
 	devCon->OMSetDepthStencilState(depthWriteOff, 1);
 	devCon->RSSetState(rasterizerCullFront);
 
-	//set skybox shaders
-	devCon->VSSetShader(pVSSkybox, 0, 0);
-	devCon->PSSetShader(pFSSkybox, 0, 0);
-	devCon->IASetInputLayout(pILSkybox);
-
 	//constant buffer data (manually rolling this for skybox. usually handled in renderframe)
 	CBuffer_PerObject cbuf;
 	XMMATRIX translation, projection, view;
@@ -308,22 +304,13 @@ void Renderer::DrawSkybox() {
 	devCon->UpdateSubresource(cBuffer_PerObject, 0, 0, &cbuf, 0, 0);
 	devCon->VSSetConstantBuffers(12, 1, &cBuffer_PerObject);
 
-	//set shader resources
-	auto t = skyboxObject->texture->GetTexture();
-	devCon->PSSetShaderResources(0, 1, &t);
-	auto s = skyboxObject->texture->GetSampler();
-	devCon->PSSetSamplers(0, 1, &s);
-
+	skyboxObject->material->UpdateMaterial(skyboxObject);
+	skyboxObject->material->Bind();
 	skyboxObject->mesh->Render();
 
 	//back face culling and enable depth write
 	devCon->OMSetDepthStencilState(nullptr, 1);
 	devCon->RSSetState(rasterizerCullBack);
-
-	//reset shaders to standard
-	devCon->VSSetShader(pVS, 0, 0);
-	devCon->PSSetShader(pFS, 0, 0);
-	devCon->IASetInputLayout(pIL);
 }
 
 void Renderer::RenderFrame() {
@@ -334,18 +321,19 @@ void Renderer::RenderFrame() {
 
 	DrawSkybox();
 
-	//create the transform data stuff
-	CBuffer_Lighting cBufferLightingData;
-	CBuffer_PerObject cBufferPerObjectData = {};
-	cBufferPerObjectData.WVP = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX view = camera.GetViewMatrix();
-	DirectX::XMMATRIX projection = camera.GetProjectionMatrix(window.GetWidth(), window.GetHeight());
-
 	//set per frame buffer values
 	CBuffer_PerFrame cBufferPerFrameData = {};
 	XMStoreFloat3(&cBufferPerFrameData.cameraPosition, camera.transform.GetPosition());
 	devCon->UpdateSubresource(cBuffer_PerFrame, NULL, NULL, &cBufferPerFrameData, NULL, NULL);
 	devCon->VSSetConstantBuffers(11, 1, &cBuffer_PerFrame);
+
+	CBuffer_PerObject cBufferPerObjectData = {};
+
+	////////create the transform data stuff
+	//////CBuffer_Lighting cBufferLightingData;
+	//////cBufferPerObjectData.WVP = DirectX::XMMatrixIdentity();
+	DirectX::XMMATRIX view = camera.GetViewMatrix();
+	DirectX::XMMATRIX projection = camera.GetProjectionMatrix(window.GetWidth(), window.GetHeight());
 
 	for (auto obj : gameObjects) {
 		//transform
@@ -353,55 +341,50 @@ void Renderer::RenderFrame() {
 		cBufferPerObjectData.world = world;
 		cBufferPerObjectData.WVP = world * view * projection;
 
-		//lighting
-		//ambient light
-		cBufferLightingData.ambientLightColour = ambientLightColour;
-		//directional lights
-		for (size_t i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++) {
-			cBufferLightingData.directionalLights[i].enabled = directionalLights[i].enabled;
+		////////lighting
+		////////ambient light
+		//////cBufferLightingData.ambientLightColour = ambientLightColour;
+		////////directional lights
+		//////for (size_t i = 0; i < MAX_DIRECTIONAL_LIGHTS; i++) {
+		//////	cBufferLightingData.directionalLights[i].enabled = directionalLights[i].enabled;
 
-			//if disabled then skip to next light
-			if (!directionalLights[i].enabled) { continue; }
+		//////	//if disabled then skip to next light
+		//////	if (!directionalLights[i].enabled) { continue; }
 
-			cBufferLightingData.directionalLights[i].colour = directionalLights[i].colour;
-			XMMATRIX transpose = XMMatrixTranspose(world);
-			cBufferLightingData.directionalLights[i].sourcePosition = XMVector3Transform(directionalLights[i].sourcePosition, transpose);
-		}
-		//point lights
-		for (size_t i = 0; i < MAX_POINT_LIGHTS; i++) {
-			cBufferLightingData.pointLights[i].enabled = pointLights[i].enabled;
+		//////	cBufferLightingData.directionalLights[i].colour = directionalLights[i].colour;
+		//////	XMMATRIX transpose = XMMatrixTranspose(world);
+		//////	cBufferLightingData.directionalLights[i].sourcePosition = XMVector3Transform(directionalLights[i].sourcePosition, transpose);
+		//////}
+		////////point lights
+		//////for (size_t i = 0; i < MAX_POINT_LIGHTS; i++) {
+		//////	cBufferLightingData.pointLights[i].enabled = pointLights[i].enabled;
 
-			//if disabled then skip to next light
-			if (!pointLights[i].enabled) { continue; }
+		//////	//if disabled then skip to next light
+		//////	if (!pointLights[i].enabled) { continue; }
 
-			XMMATRIX inverse = XMMatrixInverse(nullptr, world);
+		//////	XMMATRIX inverse = XMMatrixInverse(nullptr, world);
 
-			cBufferLightingData.pointLights[i].position = XMVector3Transform(pointLights[i].position, inverse);
-			cBufferLightingData.pointLights[i].colour = pointLights[i].colour;
-			cBufferLightingData.pointLights[i].strength = pointLights[i].strength;
-		}
+		//////	cBufferLightingData.pointLights[i].position = XMVector3Transform(pointLights[i].position, inverse);
+		//////	cBufferLightingData.pointLights[i].colour = pointLights[i].colour;
+		//////	cBufferLightingData.pointLights[i].strength = pointLights[i].strength;
+		//////}
 
 		devCon->UpdateSubresource(cBuffer_PerObject, NULL, NULL, &cBufferPerObjectData, NULL, NULL);
 		devCon->VSSetConstantBuffers(12, 1, &cBuffer_PerObject);
 
-		devCon->UpdateSubresource(cBuffer_Lighting, NULL, NULL, &cBufferLightingData, NULL, NULL);
-		devCon->VSSetConstantBuffers(13, 1, &cBuffer_Lighting);
-	
-		auto t = obj->texture->GetTexture();
-		devCon->PSSetShaderResources(0, 1, &t);
-		auto s = obj->texture->GetSampler();
-		devCon->PSSetSamplers(0, 1, &s);
-		auto ts = skyboxObject->texture->GetTexture();
-		devCon->PSSetShaderResources(1, 1, &ts);
+		//////devCon->UpdateSubresource(cBuffer_Lighting, NULL, NULL, &cBufferLightingData, NULL, NULL);
+		//////devCon->VSSetConstantBuffers(13, 1, &cBuffer_Lighting);
 
 		devCon->RSSetState(obj->mesh->isDoubleSided ? rasterizerCullNone : rasterizerCullBack);
-		devCon->OMSetBlendState(obj->texture->isTransparent ? blendTransparent : blendOpaque, 0, 0xffffffff);
-		devCon->OMSetDepthStencilState(obj->texture->isTransparent ? depthWriteOff : nullptr, 1);
+		devCon->OMSetBlendState(obj->material->GetTexture()->isTransparent ? blendTransparent : blendOpaque, 0, 0xffffffff);
+		devCon->OMSetDepthStencilState(obj->material->GetTexture()->isTransparent ? depthWriteOff : nullptr, 1);
 
+		obj->material->UpdateMaterial(obj);
+		obj->material->Bind();
 		obj->mesh->Render();
 	}
 
-	RenderText("Hello World", 100, 100);
+	//RenderText("Hello World", 100, 100);
 
 	//flip the back and front buffers around. display on screen
 	swapChain->Present(0, 0);

@@ -41,6 +41,8 @@ class GameObject;
 class Renderer
 {
 private:
+	Window& window;
+
 	IDXGISwapChain* swapChain = nullptr; //pointer to swap chain reference
 	ID3D11Device* dev = nullptr; //pointer to direct3d device interface
 	ID3D11DeviceContext* devCon = nullptr; //pointer to direct3d device context
@@ -60,19 +62,6 @@ private:
 	DirectX::SpriteBatch* spriteBatch = nullptr;
 
 	long InitD3D();
-
-	ID3D11VertexShader* pVS = nullptr;
-	ID3D11PixelShader* pFS = nullptr;
-	ID3D11InputLayout* pIL = nullptr;
-	ID3D11VertexShader* pVSSkybox = nullptr;
-	ID3D11PixelShader* pFSSkybox = nullptr;
-	ID3D11InputLayout* pILSkybox = nullptr;
-	ID3D11Buffer* vBuffer = nullptr; //vertex buffer
-	ID3D11Buffer* iBuffer = nullptr; //index buffer
-	ID3D11Buffer* cBuffer_PerObject = nullptr; //constant buffer object
-	ID3D11Buffer* cBuffer_PerFrame = nullptr; //constant buffer frame
-	ID3D11Buffer* cBuffer_Lighting = nullptr; //constant buffer lighting
-
 	long InitDepthBuffer();
 	long InitPipeline();
 	void InitGraphics();
@@ -80,8 +69,6 @@ private:
 	void InitRasterizers();
 	void InitBlendModes();
 	void RenderText(const char* text, int x, int y);
-
-	Window& window;
 public:
 	ID3D11Device* GetDevice() { return dev; }
 	ID3D11DeviceContext* GetDeviceCon() { return devCon; }

@@ -1,11 +1,12 @@
 #pragma once
 
+#include <string>
 #include <d3d11.h>
 
 #include "Transform.h"
 
 class Mesh;
-class Texture;
+class Material;
 
 class GameObject
 {
@@ -14,7 +15,7 @@ private:
 public:
 	Transform transform;
 	Mesh* mesh;
-	Texture* texture;
+	Material* material;
 
 	bool hasSpecialShaders = false;
 	ID3D11VertexShader* pVS = nullptr;
@@ -25,6 +26,6 @@ public:
 	std::string pILFilePath = "";
 
 	std::string GetName() { return name; }
-	GameObject(std::string objectName, Mesh* objectMesh, Texture* objectTexture);
+	GameObject(std::string objectName, Mesh* objectMesh, Material* objectMaterial);
 };
 

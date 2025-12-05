@@ -2,7 +2,7 @@
 #include <string>
 
 struct ID3D11VertexShader;
-struct ID3D11FragmentShader;
+struct ID3D11PixelShader;
 struct ID3D11InputLayout;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -25,7 +25,7 @@ protected:
 	ID3D11Device* dev = nullptr;
 	ID3D11DeviceContext* devCon = nullptr;
 	ID3D11VertexShader* vShader = nullptr;
-	ID3D11FragmentShader* fShader = nullptr;
+	ID3D11PixelShader* fShader = nullptr;
 	ID3D11InputLayout* vLayout = nullptr;
 
 	Texture* texture = nullptr;

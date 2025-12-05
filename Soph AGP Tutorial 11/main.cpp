@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Material.h"
 #include "GameObject.h"
 #include "BoxCollider.h"
 #include "Debug.h"
@@ -35,19 +36,23 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	Mesh mesh_sphere{ renderer, "Assets/Models/sphere.obj" };
 	Mesh mesh_fish{ renderer, "Assets/Models/fish.obj" };
 	Mesh mesh_grass{ renderer, "Assets/Models/grass.obj", true };
+	
 	Texture tex_skybox{ renderer, "Assets/Textures/Skybox/skybox02.dds", false, Texture::TextureType::Cubemap };
 	Texture tex_box{ renderer, "Assets/Textures/Box.bmp" };
 	Texture tex_fish{ renderer, "Assets/Textures/fish_texture.png", true };
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
+	
+	//make materials
+	Material mat_unlit{ "Unlit", renderer, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/PixelShader.cso", &tex_box };
 
 	//skybox object
-	GameObject obj_skybox{ "Skybox", &mesh_cube, &tex_skybox };
+	GameObject obj_skybox{ "Skybox", &mesh_cube, &mat_unlit };
 	renderer.skyboxObject = &obj_skybox;
 
 	//make gameobjects (render transparent objects last!!)
-	GameObject objSphere{ "Sphere", &mesh_sphere, &tex_box };
-	GameObject objFish{ "Fish", &mesh_fish, &tex_fish };
-	GameObject objFlower{ "Flower", &mesh_grass, &tex_flower };
+	GameObject objSphere{ "Sphere", &mesh_sphere, &mat_unlit };
+	GameObject objFish{ "Fish", &mesh_fish, &mat_unlit };
+	GameObject objFlower{ "Flower", &mesh_grass, &mat_unlit };
 
 	//set lighting
 	renderer.directionalLights[0] = { DirectX::XMVECTOR{ 0.3f, 0.7f, 0.7f }, { 0, 0.8f, 0.75f }, true };
