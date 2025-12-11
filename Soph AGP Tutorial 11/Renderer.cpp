@@ -24,22 +24,17 @@ struct CBuffer_PerFrame {
 	float padding;
 };
 
-struct CBuffer_Lighting {
-	DirectX::XMVECTOR ambientLightColour = { 1, 1, 1 };
-	DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
-	PointLight pointLights[MAX_POINT_LIGHTS];
-};
+//struct CBuffer_Lighting {
+//	DirectX::XMVECTOR ambientLightColour = { 1, 1, 1 };
+//	DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
+//	PointLight pointLights[MAX_POINT_LIGHTS];
+//};
 
 Renderer::Renderer(Window& inWindow)
 	: window(inWindow) {
 
 	if (InitD3D() != S_OK) {
 		LOG("Failed to initialise D3D renderer");
-		return;
-	}
-
-	if (InitPipeline() != S_OK) {
-		LOG("Failed to initialise pipeline");
 		return;
 	}
 
@@ -176,26 +171,6 @@ long Renderer::InitDepthBuffer() {
 	return S_OK;
 }
 
-long Renderer::InitPipeline() {
-	//basic shader
-	ShaderLoading::LoadVertexShader("Compiled Shaders/VertexShader.cso", dev, &pVS, &pIL);
-	ShaderLoading::LoadFragmentShader("Compiled Shaders/FragmentShader.cso", dev, &pFS);
-	//skybox shader
-	ShaderLoading::LoadVertexShader("Compiled Shaders/SkyboxVShader.cso", dev, &pVSSkybox, &pILSkybox);
-	ShaderLoading::LoadFragmentShader("Compiled Shaders/SkyboxFShader.cso", dev, &pFSSkybox);
-	//reflective shader
-	ShaderLoading::LoadVertexShader("Compiled Shaders/ReflectiveVShader.cso", dev, &pVS, &pIL);
-	ShaderLoading::LoadFragmentShader("Compiled Shaders/ReflectiveFShader.cso", dev, &pFS);
-
-	//set shader objects as active shaders in the pipeline
-	devCon->VSSetShader(pVS, 0, 0);
-	devCon->PSSetShader(pFS, 0, 0);
-
-	devCon->IASetInputLayout(pIL);
-
-	return S_OK;
-}
-
 void Renderer::InitGraphics() {
 	//create the per object constant buffer
 	D3D11_BUFFER_DESC cbd = { 0 };
@@ -214,12 +189,12 @@ void Renderer::InitGraphics() {
 		return;
 	}
 
-	//create the lighting constant buffer (same settings as above so we just need to change the size)
-	cbd.ByteWidth = sizeof(CBuffer_Lighting);
-	if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_Lighting))) {
-		LOG("Failed to create constant buffer lighting");
-		return;
-	}
+	////create the lighting constant buffer (same settings as above so we just need to change the size)
+	//cbd.ByteWidth = sizeof(CBuffer_Lighting);
+	//if (FAILED(dev->CreateBuffer(&cbd, NULL, &cBuffer_Lighting))) {
+	//	LOG("Failed to create constant buffer lighting");
+	//	return;
+	//}
 
 	font = new DirectX::SpriteFont(dev, L"Assets/Fonts/myfile.Spritefont");
 	spriteBatch = new DirectX::SpriteBatch(devCon);
@@ -279,11 +254,6 @@ void Renderer::RenderText(const char* text, int x, int y) {
 
 	//restore previous depth stencil
 	devCon->OMSetDepthStencilState(nullptr, 0);
-
-	//restore shader settings after text display
-	devCon->VSSetShader(pVS, 0, 0);
-	devCon->PSSetShader(pFS, 0, 0);
-	devCon->IASetInputLayout(pIL);
 }
 
 void Renderer::DrawSkybox() {
@@ -395,8 +365,8 @@ void Renderer::Clean() {
 	delete font;
 	delete spriteBatch;
 	if (cBuffer_PerObject) cBuffer_PerObject->Release();
-	if (iBuffer) iBuffer->Release();
-	if (vBuffer) vBuffer->Release();
+	//if (iBuffer) iBuffer->Release();
+	//if (vBuffer) vBuffer->Release();
 	if (depthBuffer) depthBuffer->Release();
 	if (backBuffer) backBuffer->Release();
 	if (swapChain) swapChain->Release();

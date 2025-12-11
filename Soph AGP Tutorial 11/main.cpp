@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "Material.h"
+#include "MaterialLit.h"
 #include "GameObject.h"
 #include "BoxCollider.h"
 #include "Debug.h"
@@ -43,14 +44,16 @@ int WINAPI WinMain(_In_ HINSTANCE instanceH, _In_opt_ HINSTANCE prevInstanceH, _
 	Texture tex_flower{ renderer, "Assets/Textures/flower.png", true };
 	
 	//make materials
-	Material mat_unlit{ "Unlit", renderer, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/PixelShader.cso", &tex_box };
+	Material mat_unlit{ "Unlit", renderer, "Compiled Shaders/VertexShader.cso", "Compiled Shaders/FragmentShader.cso", &tex_box };
+	MaterialLit mat_lit{ "Lit", renderer, "Compiled Shaders/ReflectiveVShader.cso", "Compiled Shaders/ReflectiveFShader.cso", &tex_box };
+	mat_lit.SetReflectionTexture(&tex_skybox);
 
 	//skybox object
 	GameObject obj_skybox{ "Skybox", &mesh_cube, &mat_unlit };
 	renderer.skyboxObject = &obj_skybox;
 
 	//make gameobjects (render transparent objects last!!)
-	GameObject objSphere{ "Sphere", &mesh_sphere, &mat_unlit };
+	GameObject objSphere{ "Sphere", &mesh_sphere, &mat_lit };
 	GameObject objFish{ "Fish", &mesh_fish, &mat_unlit };
 	GameObject objFlower{ "Flower", &mesh_grass, &mat_unlit };
 
