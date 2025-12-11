@@ -14,7 +14,7 @@ struct VIn
 {
     float3 position : POSITION;
     float2 uv : TEXCOORD;
-    float normal : NORMAL;
+    float3 normal : NORMAL;
 };
 
 struct VOut
